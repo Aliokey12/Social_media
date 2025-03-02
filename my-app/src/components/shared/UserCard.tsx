@@ -1,5 +1,6 @@
 import { Models } from "appwrite";
 import { Link } from "react-router-dom";
+import { FiUserPlus } from "react-icons/fi";
 
 import { Button } from "../ui/button";
 
@@ -9,24 +10,30 @@ type UserCardProps = {
 
 const UserCard = ({ user }: UserCardProps) => {
   return (
-    <Link to={`/profile/${user.$id}`} className="user-card">
-      <img
-        src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
-        alt="yaratıcı"
-        className="rounded-full w-14 h-14"
-      />
+    <Link to={`/profile/${user.$id}`} className="flex items-center justify-between gap-3 p-3 rounded-lg hover:bg-dark-3 transition-all duration-300">
+      <div className="flex items-center gap-3">
+        <img
+          src={user.imageUrl || "/assets/icons/profile-placeholder.svg"}
+          alt="yaratıcı"
+          className="rounded-full w-12 h-12 object-cover border-2 border-primary-500"
+        />
 
-      <div className="flex-center flex-col gap-1">
-        <p className="base-medium text-light-1 text-center line-clamp-1">
-          {user.name}
-        </p>
-        <p className="small-regular text-light-3 text-center line-clamp-1">
-          @{user.username}
-        </p>
+        <div className="flex flex-col">
+          <p className="base-medium text-light-1 line-clamp-1">
+            {user.name}
+          </p>
+          <p className="small-regular text-light-3 line-clamp-1">
+            @{user.username}
+          </p>
+        </div>
       </div>
 
-      <Button type="button" size="sm" className="shad-button_primary px-5">
-        Takip Et
+      <Button 
+        type="button" 
+        size="sm" 
+        className="bg-primary-500 hover:bg-primary-600 text-light-1 rounded-full px-4 py-1 flex items-center gap-1 transition-all duration-300">
+        <FiUserPlus className="text-sm" />
+        <span>Takip Et</span>
       </Button>
     </Link>
   );

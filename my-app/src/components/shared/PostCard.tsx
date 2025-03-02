@@ -1,5 +1,7 @@
 import { Models } from "appwrite";
 import { Link } from "react-router-dom";
+import { FiEdit2 } from "react-icons/fi";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 import { PostStats } from "@/components/shared";
 import { multiFormatDateString } from "@/lib/utils";
@@ -12,11 +14,11 @@ type PostCardProps = {
 const PostCard = ({ post }: PostCardProps) => {
   const { user } = useUserContext();
 
-  if (!post.creator) return;
+  if (!post || !post.creator) return null;
 
   return (
-    <div className="post-card">
-      <div className="flex-between">
+    <div className="post-card bg-dark-2 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+      <div className="flex-between p-5">
         <div className="flex items-center gap-3">
           <Link to={`/profile/${post.creator.$id}`}>
             <img
@@ -25,7 +27,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 "/assets/icons/profile-placeholder.svg"
               }
               alt="yaratıcı"
-              className="w-12 lg:h-12 rounded-full"
+              className="w-12 h-12 rounded-full object-cover border-2 border-primary-500"
             />
           </Link>
 
@@ -34,49 +36,59 @@ const PostCard = ({ post }: PostCardProps) => {
               {post.creator.name}
             </p>
             <div className="flex-center gap-2 text-light-3">
-              <p className="subtle-semibold lg:small-regular ">
+              <p className="subtle-semibold lg:small-regular">
                 {multiFormatDateString(post.$createdAt)}
               </p>
-              •
-              <p className="subtle-semibold lg:small-regular">
-                {post.location}
-              </p>
+              {post.location && (
+                <>
+                  <span>•</span>
+                  <div className="flex items-center gap-1">
+                    <FaMapMarkerAlt className="text-secondary-500 text-xs" />
+                    <p className="subtle-semibold lg:small-regular">
+                      {post.location}
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
 
-        <Link
-          to={`/update-post/${post.$id}`}
-          className={`${user.id !== post.creator.$id && "hidden"}`}>
-          <img
-            src={"/assets/icons/edit.svg"}
-            alt="düzenle"
-            width={20}
-            height={20}
-          />
-        </Link>
+        {user && post.creator && user.id === post.creator.$id && (
+          <Link
+            to={`/update-post/${post.$id}`}
+            className="p-2 rounded-full hover:bg-dark-3 transition-all duration-300">
+            <FiEdit2 className="text-light-3 hover:text-primary-500" size={18} />
+          </Link>
+        )}
       </div>
 
       <Link to={`/posts/${post.$id}`}>
-        <div className="small-medium lg:base-medium py-5">
-          <p>{post.caption}</p>
-          <ul className="flex gap-1 mt-2">
-            {post.tags.map((tag: string, index: string) => (
-              <li key={`${tag}${index}`} className="text-light-3 small-regular">
-                #{tag}
-              </li>
-            ))}
-          </ul>
+        <div className="px-5 pb-3">
+          <p className="text-light-1">{post.caption}</p>
+          {post.tags && Array.isArray(post.tags) && post.tags.length > 0 && (
+            <ul className="flex flex-wrap gap-1 mt-2">
+              {post.tags.map((tag: string, index: number) => (
+                <li key={`${tag}${index}`} className="text-primary-500 text-sm hover:text-primary-600 transition-all duration-300">
+                  #{tag}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        <img
-          src={post.imageUrl || "/assets/icons/profile-placeholder.svg"}
-          alt="gönderi resmi"
-          className="post-card_img"
-        />
+        <div className="relative w-full aspect-video overflow-hidden">
+          <img
+            src={post.imageUrl || "/assets/icons/profile-placeholder.svg"}
+            alt="gönderi resmi"
+            className="w-full h-full object-cover transition-all duration-500 hover:scale-105"
+          />
+        </div>
       </Link>
 
-      <PostStats post={post} userId={user.id} />
+      <div className="p-5 pt-3">
+        {user && <PostStats post={post} userId={user.id} />}
+      </div>
     </div>
   );
 };
