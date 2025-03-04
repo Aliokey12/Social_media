@@ -3,6 +3,7 @@ import { Models } from "appwrite";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 import {
   Form,
@@ -30,6 +31,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useUserContext();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
     defaultValues: {
@@ -41,42 +43,49 @@ const PostForm = ({ post, action }: PostFormProps) => {
   });
 
   // Query
-  const { mutateAsync: createPost, isLoading: isLoadingCreate } =
-    useCreatePost();
-  const { mutateAsync: updatePost, isLoading: isLoadingUpdate } =
-    useUpdatePost();
+  const { mutateAsync: createPost } = useCreatePost();
+  const { mutateAsync: updatePost } = useUpdatePost();
 
   // Handler
   const handleSubmit = async (value: z.infer<typeof PostValidation>) => {
-    // ACTION = UPDATE
-    if (post && action === "Update") {
-      const updatedPost = await updatePost({
+    setIsLoading(true);
+    try {
+      // ACTION = UPDATE
+      if (post && action === "Update") {
+        const updatedPost = await updatePost({
+          ...value,
+          postId: post.$id,
+          imageId: post.imageId,
+          imageUrl: post.imageUrl,
+        });
+
+        if (!updatedPost) {
+          toast({
+            title: `${action} gönderisi başarısız oldu. Lütfen tekrar deneyin.`,
+          });
+        }
+        return navigate(`/posts/${post.$id}`);
+      }
+
+      // ACTION = CREATE
+      const newPost = await createPost({
         ...value,
-        postId: post.$id,
-        imageId: post.imageId,
-        imageUrl: post.imageUrl,
+        userId: user.id,
       });
 
-      if (!updatedPost) {
+      if (!newPost) {
         toast({
           title: `${action} gönderisi başarısız oldu. Lütfen tekrar deneyin.`,
         });
       }
-      return navigate(`/posts/${post.$id}`);
-    }
-
-    // ACTION = CREATE
-    const newPost = await createPost({
-      ...value,
-      userId: user.id,
-    });
-
-    if (!newPost) {
+      navigate("/");
+    } catch (error) {
       toast({
         title: `${action} gönderisi başarısız oldu. Lütfen tekrar deneyin.`,
       });
+    } finally {
+      setIsLoading(false);
     }
-    navigate("/");
   };
 
   return (
@@ -163,8 +172,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
-            disabled={isLoadingCreate || isLoadingUpdate}>
-            {(isLoadingCreate || isLoadingUpdate) && <Loader />}
+            disabled={isLoading}>
+            {isLoading && <Loader />}
             {action} Gönderi
           </Button>
         </div>

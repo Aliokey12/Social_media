@@ -29,7 +29,7 @@ const LeftSidebar = () => {
     <nav className="leftsidebar bg-dark-2 shadow-xl">
       <div className="flex flex-col gap-11">
         <Link to="/" className="flex gap-3 items-center">
-          <div className="font-bold text-primary-500 text-3xl transition-all duration-300 hover:text-primary-600">SocialFlow</div>
+          <div className="font-bold text-primary-500 text-3xl transition-all duration-300 hover:text-primary-600">SnapFlow</div>
         </Link>
 
         {isLoading || !user.email ? (

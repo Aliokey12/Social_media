@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { FaMagnifyingGlass } from "react-icons/fa6";
 
 import { Input } from "@/components/ui";
 import useDebounce from "@/hooks/useDebounce";
@@ -47,7 +46,7 @@ const Explore = () => {
 
   const shouldShowSearchResults = searchValue !== "";
   const shouldShowPosts = !shouldShowSearchResults && 
-    posts.pages.every((item) => item.documents.length === 0);
+    posts.pages.every((item) => item?.documents.length === 0);
 
   return (
     <div className="explore-container">
@@ -97,7 +96,9 @@ const Explore = () => {
           <p className="text-light-4 mt-10 text-center w-full">Gönderilerin sonu</p>
         ) : (
           posts.pages.map((item, index) => (
-            <GridPostList key={`page-${index}`} posts={item.documents} />
+            item && item.documents ? (
+              <GridPostList key={`page-${index}`} posts={item.documents} />
+            ) : null
           ))
         )}
       </div>

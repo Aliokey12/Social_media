@@ -2,6 +2,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,9 @@ import { useUserContext } from "@/context/AuthContext";
 const SignupForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const { checkAuthUser } = useUserContext();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -29,17 +32,17 @@ const SignupForm = () => {
   });
 
   // Queries
-  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount();
-  const { mutateAsync: signInAccount, isLoading: isSigningInUser } = useSignInAccount();
+  const { mutateAsync: createUserAccount } = useCreateUserAccount();
+  const { mutateAsync: signInAccount } = useSignInAccount();
 
   // Handler
   const handleSignup = async (user: z.infer<typeof SignupValidation>) => {
+    setIsLoading(true);
     try {
       const newUser = await createUserAccount(user);
 
       if (!newUser) {
         toast({ title: "Kayıt başarısız. Lütfen tekrar deneyin.", });
-        
         return;
       }
 
@@ -50,9 +53,7 @@ const SignupForm = () => {
 
       if (!session) {
         toast({ title: "Bir şeyler ters gitti. Lütfen yeni hesabınızla giriş yapın", });
-        
         navigate("/sign-in");
-        
         return;
       }
 
@@ -61,15 +62,16 @@ const SignupForm = () => {
       if (isLoggedIn) {
         form.reset();
         toast({ title: "Tebrikler aramıza sende katıldın . Yönlendiriliyorsun !", });
-
         navigate("/");
       } else {
         toast({ title: "Giriş başarısız. Lütfen tekrar deneyin.", });
-        
         return;
       }
     } catch (error) {
-      console.log({ error });
+      console.error("Kayıt sırasında bir hata oluştu:", error);
+      toast({ title: "Kayıt başarısız. Lütfen tekrar deneyin.", });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -145,7 +147,7 @@ const SignupForm = () => {
           />
 
           <Button type="submit" className="shad-button_primary">
-            {isCreatingAccount || isSigningInUser || isUserLoading ? (
+            {isLoading ? (
               <div className="flex-center gap-2">
                 <Loader /> Yükleniyor...
               </div>

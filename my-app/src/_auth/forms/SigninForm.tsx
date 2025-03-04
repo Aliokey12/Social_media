@@ -2,6 +2,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -17,9 +18,12 @@ const SigninForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  
+  // Yükleme durumu için yerel durum oluştur
+  const [isLoading, setIsLoading] = useState(false);
 
   // Query
-  const { mutateAsync: signInAccount, isLoading } = useSignInAccount();
+  const { mutateAsync: signInAccount } = useSignInAccount();
 
   const form = useForm<z.infer<typeof SigninValidation>>({
     resolver: zodResolver(SigninValidation),
@@ -31,6 +35,7 @@ const SigninForm = () => {
 
   // Handle sign-in
   const handleSignin = async (user: z.infer<typeof SigninValidation>) => {
+    setIsLoading(true); // Yükleme durumunu başlat
     try {
       const session = await signInAccount(user);
 
@@ -50,6 +55,8 @@ const SigninForm = () => {
     } catch (error) {
       console.error("Giriş sırasında bir hata oluştu:", error);
       toast({ title: "Beklenmedik bir hata oluştu. Lütfen tekrar deneyin." });
+    } finally {
+      setIsLoading(false); // Yükleme durumunu durdur
     }
   };
 

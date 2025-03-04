@@ -18,7 +18,7 @@ const Topbar = () => {
     <section className="topbar sticky top-0 z-50 bg-dark-2 shadow-md">
       <div className="flex justify-between items-center py-3 px-5">
         <Link to="/" className="flex gap-3 items-center">
-          <div className="font-bold text-primary-500 text-3xl transition-all duration-300 hover:text-primary-600">SocialFlow</div>
+          <div className="font-bold text-primary-500 text-3xl transition-all duration-300 hover:text-primary-600">SnapFlow</div>
         </Link>
         <div className="flex gap-4 items-center">
           <Button
