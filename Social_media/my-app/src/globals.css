@@ -354,6 +354,19 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
+  /* Z-index değerleri */
+  .z-bottombar {
+    z-index: 50;
+  }
+  
+  .z-message-input {
+    z-index: 60;
+  }
+  
+  .z-topbar {
+    z-index: 40;
+  }
+
   .loader-dots {
     display: flex;
     justify-content: center;

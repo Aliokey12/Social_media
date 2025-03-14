@@ -321,7 +321,7 @@ const MessageDetail = () => {
       </div>
       
       {/* Message Input with glass effect */}
-      <div className="backdrop-blur-md bg-dark-2/40 border-t border-glassBorder p-4 sticky bottom-0 z-10 shadow-lg">
+      <div className="backdrop-blur-md bg-dark-2/40 border-t border-glassBorder p-4 sticky bottom-0 z-60 shadow-lg mb-16 md:mb-0">
         <div className="max-w-5xl mx-auto">
           <form onSubmit={handleSendMessage} className="flex items-center gap-3">
             <button 

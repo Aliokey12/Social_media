@@ -22,7 +22,7 @@ const RootLayout = () => {
         <LeftSidebar />
         
         <section className="flex-1 overflow-hidden">
-          <div className="max-w-5xl mx-auto   w-full">
+          <div className="max-w-5xl mx-auto w-full pb-20 md:pb-0">
             <Outlet />
           </div>
         </section>
